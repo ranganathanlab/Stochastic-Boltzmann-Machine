@@ -23,6 +23,7 @@ def ParseOptions(options):
         ('N_chains', 1000),  #nb of states used to compute statistics
         ('m', 1), # Rank of the Hessian matrix (only for SBM)
         ('theta',0.2),
+        ('ignore_gaps_weighting', True), # ignore gaps when calculating sequence weights
         ('k_MCMC',10000),
 
         ('PseudoCount',False), # the default pseudo count is 1/Neff
@@ -133,7 +134,8 @@ def Init_statistics(options,train_align):
     ###### EVALUATE GOAL STATS #####
     print('Compute the statistics from the database....')
     if options['Weights'] is None:
-        W,N_eff=ut.CalcWeights(train_align,options['theta'])
+        W,N_eff=ut.CalcWeights(train_align,options['theta'],
+                               options['ignore_gaps_weighting'])
     else:
         assert len(options['Weights'])==train_align.shape[0]
         W = options['Weights']
@@ -278,7 +280,7 @@ def GradLogLike(w,lambdaJ,lambdah,fi,fij,options,align_subsamp=None):
         if options['Num_batch']==len(options['Batches'])-1:
             options['Num_batch']=0
         else:options['Num_batch'] = options['Num_batch'] + 1
-        W,N_eff=ut.CalcWeights(sub,options['theta'])
+        W,N_eff=ut.CalcWeights(sub,options['theta'],options['ignore_gaps_weighting'])
         fi,fij=ut.CalcStatsWeighted(options['q'],sub,W/N_eff)
     ################################
 

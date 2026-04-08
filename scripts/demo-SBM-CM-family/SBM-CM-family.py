@@ -18,7 +18,7 @@ results_dir = ROOT / "results"
 
 ##########################################################
 
-def run_SBM(Input_MSA,fam,Model,train_file,N_iter, m, N_chains_list,Nb_rep,Nb_av,k_MCMC,TestTrain,ParamInit,lambdJ,lambdh,theta):
+def run_SBM(Input_MSA,fam,Model,train_file,N_iter, m, N_chains_list,Nb_rep,Nb_av,k_MCMC,TestTrain,ParamInit,lambdJ,lambdh,theta,ignore_gaps):
     fam = str(fam)
     
     for rep in range(Nb_rep):
@@ -39,7 +39,8 @@ def run_SBM(Input_MSA,fam,Model,train_file,N_iter, m, N_chains_list,Nb_rep,Nb_av
 
                 options = dict([('Model', Model),
                                 ('N_iter', N_iter), ('N_chains', N_chains), ('m', m), 
-                                ('skip_log', 1), ('theta', theta), ('k_MCMC', k_MCMC),
+                                ('skip_log', 1), ('theta', theta), ('ignore_gaps_weighting',ignore_gaps),
+                                ('k_MCMC', k_MCMC),
                                 ('lambda_h', lambdh), ('lambda_J', lambdJ),
                                 ('Pruning', False), ('Pruning Mask', None),
                                 ('Param_init', ParamInit),
@@ -47,7 +48,7 @@ def run_SBM(Input_MSA,fam,Model,train_file,N_iter, m, N_chains_list,Nb_rep,Nb_av
                                 ('Weights', None), ('SGD', None),
                                 ('Seed', None), ('Zero Fields', False), 
                                 ('Store Parameters', None)])
-
+                
                 output = sbm.SBM(align, options)
                 
                 J_out,h_out = ut.Zero_Sum_Gauge(output['J'],output['h'])
@@ -127,11 +128,12 @@ if __name__ == "__main__":
     parser.add_argument('--lambdJ', type=float, default=0, help='lambda J')
     parser.add_argument('--lambdh', type=float, default=0, help='lambda h')
     parser.add_argument('--theta', type=float, default=0.3, help='threshold to compute the effective number of sequences')
+    parser.add_argument('--ignore_gaps', help="ignore gaps when calculating similarity for sequence weights", action="store_true")
     parser.add_argument('Input_MSA')
 
     args = parser.parse_args()
     run_SBM(args.Input_MSA,args.fam,args.mod,args.train_file,args.N_iter, 
             args.m, args.N_chains,args.rep,args.N_av,args.k_MCMC,args.TestTrain,
-            args.ParamInit,args.lambdJ,args.lambdh,args.theta)
+            args.ParamInit,args.lambdJ,args.lambdh,args.theta,args.ignore_gaps)
     
 
