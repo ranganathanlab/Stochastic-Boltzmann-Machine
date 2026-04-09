@@ -164,10 +164,14 @@ def Init_Pruning(options, fij):
             # Création du masque
             Mask = np.ones(fij.size, dtype=int)
             Mask[flat_indices] = 0
-            Mask = Mask.reshape(fij.shape)
-            
-            options['Pruning Mask Couplings'] = Mask.astype('int')
-            print('Pruning pct: ', 1 - np.sum(Mask) / Mask.size)
+            Mask = Mask.reshape(fij.shape)  
+        else:
+            Mask = np.load(options['Pruning Mask Couplings'])
+
+        options['Pruning Mask Couplings'] = Mask.astype('int')
+        options['Pruning_perc'] = 1 - np.sum(Mask) / Mask.size
+        print('Pruning pct: ', 1 - np.sum(Mask) / Mask.size)
+
 
 def Init_Param(options,J0,h0,N_eff,fi):
 
